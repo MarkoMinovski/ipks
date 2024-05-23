@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales by Country</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            border: solid 2px black;
+            border-collapse: collapse;
+        }
+
+        td {
+            border: solid 2px black;
+        }
+
+        tr {
+            border: solid 2px black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        #table-wrap > div {
+            width: 300px;
+            margin: auto;
+        }
+
+        #table-wrap {
+            display: flex;
+            flex-direction: column;
+            column-gap: 50px;
+        }
+
+
+    </style>
+
+    <script>
+        function processData() {
+            d3.csv("sales_by_country.csv").then(function(data) {
+                console.log(data)
+
+                data.forEach(function(d) {
+                    const row = d3.select("table").append("tr");
+                    row.append("td").html(d.country)
+                    row.append("td").html(d.num_sales)
+                    row.append("td").html(d.profits)
+
+                    if (parseInt(d.profits) >= 300000) {
+                        row.style("background-color", "green")
+                    } else {
+                        row.style("background-color", "red")
+                    }
+
+                    const profitPerSale = parseInt(d.profits) / parseInt(d.num_sales);
+
+                    row.append("td").html(profitPerSale);
+
+                })
+
+
+
+
+            })
+
+
+        }
+    </script>
+
+</head>
+<body>
+
+    <h1>Sales by Country</h1>
+
+    <div id="table-wrap">
+
+        <div id="inner-wrap">
+
+            <table id="table">
+
+                <tr id="first-row">
+                    <td>Country</td>
+                    <td>Number of products sold</td>
+                    <td>Total yearly profits</td>
+                    <td>Profit per sale</td>
+                </tr>
+
+
+            </table>
+
+
+        </div>
+
+        <div style="margin-top: 1rem">
+            <button type="button" onclick="processData()">Process Data</button>
+        </div>
+
+
+    </div>
+
+</body>
+</html>

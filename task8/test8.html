@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bar Chart: Animation at start</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        #button-div > button {
+            display: block;
+            width: 100px;
+            margin: auto;
+        }
+
+        #graph {
+            margin: auto;
+        }
+
+        #graph > div {
+            width: 500px;
+            margin: auto;
+        }
+
+    </style>
+
+    <script>
+
+        let data = [
+            {player: "Ivona", goals: 15},
+            {player: "Frosina", goals: 23},
+            {player: "Damjan", goals: 20},
+            {player: "Stojan", goals: 9},
+            {player: "Jana", goals: 6}
+        ]
+
+        function makeGraph() {
+            let svg = d3.select("svg");
+
+            const width = 500;
+            const height = 300;
+
+            const margins = {
+                top: 30,
+                right: 30,
+                left: 40,
+                bottom: 30
+            };
+
+            svg.attr("width", width + margins.left + margins.right);
+            svg.attr("height", height + margins.top + margins.bottom);
+
+            svg = svg.append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+            y = d3.scaleLinear().domain([0, d3.max(data, function(d) {
+                return d.goals;
+            })]).range([height, 0]);
+
+            x = d3.scaleBand().domain(data.map((d) => d.player)).range([width, 0]).padding(0.3);
+
+            svg.append("g").call(d3.axisLeft(y));
+            svg.append("g").attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x));
+
+            svg.selectAll("bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", function(d) { return x(d.player); })
+                .attr("width", x.bandwidth())
+                .attr("fill", "#8b17ab")
+                .attr("height", function() { return height - y(0); })
+                .attr("y", function() { return y(0); });
+
+
+            svg.selectAll("rect")
+                .transition()
+                .duration(500)
+                .attr("y", function(d) { return y(d.goals); })
+                .attr("height", function(d) { return height - y(d.goals); });
+
+
+            d3.select("#button").attr("disabled", true);
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <h1>Bar Chart: Start animation</h1>
+
+    <div id="graph">
+        <div>
+            <svg></svg>
+        </div>
+    </div>
+
+    <div id="button-div">
+        <button type="button" onclick="makeGraph()" id="button">Create graph</button>
+    </div>
+
+</body>
+</html>

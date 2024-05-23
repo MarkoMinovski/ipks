@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bar Chart: Tooltip</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        #graph {
+            margin: auto;
+        }
+
+        #graph > div {
+            width: 800px;
+            margin: auto;
+        }
+    </style>
+
+    <script>
+
+        const movieRatings = [
+            {name: "Monty Python's Life of Brian", average_rating: 9.5, genre: "comedy"},
+            {name: "James Bond: Die Another Day", average_rating: 7.3, genre: "action"},
+            {name: "Lord of the Rings: Fellowship of the Ring", average_rating: 9.1, genre: "fantasy"},
+            {name: "Batman The Dark Knight", average_rating: 5.6, genre: "superhero"}
+        ]
+
+        document.addEventListener("DOMContentLoaded", () => makeGraph());
+
+        function makeGraph() {
+
+            let tooltip = d3.select('#graph')
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("position", "absolute")
+                .style("background-color", "white")
+                .style("border", "solid")
+                .style("border-width", "1px")
+                .style("border-color", "red")
+                .style("width", "30px")
+                .style("vertical-align", "middle")
+                .style("text-align", "center")
+                .style("height", "30px")
+                .style("padding", "20px")
+
+            const width = 800;
+            const height = 300;
+
+            const margins = {
+                top: 30,
+                right: 30,
+                left: 40,
+                bottom: 30
+            };
+
+            let svg = d3.select('svg');
+
+            svg.attr("width", width + margins.left + margins.right);
+            svg.attr("height", height + margins.top + margins.bottom);
+
+            svg = svg.append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+            let xScale = d3.scaleBand().domain(movieRatings.map(movie => movie.name)).range([0, width]).padding(0.5);
+            let yScale = d3.scaleLinear().domain([0, 10]).range([height, 0]);
+
+            svg.append("g").attr("transform", `translate(0, ${height})`)
+                .call(d3.axisBottom(xScale));
+            svg.append("g").call(d3.axisLeft(yScale));
+
+
+            const mouseoverFunction = function(event, d) {
+                return tooltip.html("Rating: " + d.average_rating).style("opacity", 1)
+            }
+            const mousemoveFunction = function(event, d) {
+                return tooltip.style("transform","translateY(-55%)").
+                style("left",(event.pageX)-100+"px").style("top",(event.pageY)+30+"px").style("opacity", 1)
+            }
+            const mouseleaveFunction = function(event, d) {
+                return tooltip.style("opacity", 0)
+            }
+
+
+            svg.selectAll('bar')
+                .data(movieRatings)
+                .enter()
+                .append('rect')
+                .attr("x", function(movie){
+                    return xScale(movie.name);
+                })
+                .attr("y", function(movie) {
+                    return yScale(movie.average_rating);
+                })
+                .attr("width", xScale.bandwidth())
+                .attr("height", function(movie) { return height - yScale(movie.average_rating); })
+                .attr("fill", "#901db0")
+                .on("mouseover", mouseoverFunction)
+                .on("mousemove", mousemoveFunction)
+                .on("mouseleave", mouseleaveFunction)
+
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <div id="graph">
+        <div>
+            <svg></svg>
+        </div>
+    </div>
+
+</body>
+</html>

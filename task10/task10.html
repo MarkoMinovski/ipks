@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Area Chart</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        #graph-wrapper * {
+            display: block;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+    </style>
+
+    <script>
+
+        const DATA = [
+            {date: "01-01-2023", rainfallVolume: 873},
+            {date: "01-02-2023", rainfallVolume: 981},
+            {date: "01-03-2023", rainfallVolume: 1232},
+            {date: "01-04-2023", rainfallVolume: 453},
+            {date: "01-05-2023", rainfallVolume: 221},
+            {date: "01-06-2023", rainfallVolume: 128},
+            {date: "01-07-2023", rainfallVolume: 92},
+            {date: "01-08-2023", rainfallVolume: 46},
+            {date: "01-09-2023", rainfallVolume: 282},
+            {date: "01-10-2023", rainfallVolume: 488},
+            {date: "01-11-2023", rainfallVolume: 620},
+            {date: "01-12-2023", rainfallVolume: 881}
+        ]
+
+        document.addEventListener("DOMContentLoaded", () => makeGraph());
+
+        function makeGraph() {
+
+            const parser = d3.timeParse("%d-%m-%Y")
+
+            DATA.forEach(function(elem) {
+                elem.date = parser(elem.date);
+            })
+
+            const width = 500;
+            const height = 300;
+
+            const margins = {
+                top: 30,
+                right: 30,
+                left: 40,
+                bottom: 30
+            };
+
+            let svg = d3.select("svg");
+            svg.attr("width", width + margins.left + margins.right);
+            svg.attr("height", height + margins.top + margins.bottom);
+
+            svg = svg.append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+            const y = d3.scaleLinear().domain([0, d3.max(DATA, (elem) => elem.rainfallVolume)]).range([height, 0]);
+            svg.append("g").call(d3.axisLeft(y));
+
+            const x = d3.scaleTime().domain(d3.extent(DATA, (elem) => elem.date)).range([0, width]);
+            svg.append("g").attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            svg.append("path")
+                .datum(DATA)
+                .attr("fill", "#901db0")
+                .attr("stroke", "#b225d9")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.area()
+                    .x(function(d) { return x(d.date) })
+                    .y0(y(0))
+                    .y1(function(d) { return y(d.rainfallVolume) })
+                )
+
+        }
+
+
+    </script>
+
+</head>
+<body>
+        <h1>Monthly Rainfall</h1>
+
+        <div id="graph-wrapper">
+            <svg id="graph"></svg>
+        </div>
+
+</body>
+</html>

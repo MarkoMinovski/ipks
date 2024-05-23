@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bar Chart with Two Datasets</title>
+
+    <meta name="author" content="Marko Minovski">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        button {
+            display: block;
+            margin: auto;
+            width: 7.5%;
+        }
+    </style>
+
+    <script>
+
+        let y, x, xGroup, svg, height;
+
+        const firstDataSet = [
+            {studentName: "Marija", gradeAvg: 9.91, id: "222015"},
+            {studentName: "Stojan", gradeAvg: 7.73, id: "222093"},
+            {studentName: "Ivan", gradeAvg: 6.82, id: "222183"},
+            {studentName: "Stefanija", gradeAvg: 10.00, id: "222001"}
+        ]
+
+        const secondDataSet = [
+            {studentName: "Ivona", gradeAvg: 5.00, id: "221501"},
+            {studentName: "Frosina", gradeAvg: 8.63, id: "221509"},
+            {studentName: "Mihail", gradeAvg: 9.00, id: "221552"},
+            {studentName: "Marko", gradeAvg: 7.91, id: "221503"},
+            {studentName: "Jana", gradeAvg: 2.00, id: "221502"}
+        ]
+
+
+        function createGraph() {
+            svg = d3.select("svg");
+
+            const width = 500;
+            height = 300;
+
+            const margins = {
+                top: 30,
+                right: 30,
+                left: 40,
+                bottom: 30
+            };
+
+            svg.attr("width", width + margins.left + margins.right);
+            svg.attr("height", height + margins.top + margins.bottom);
+
+            svg = svg.append("g").attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+            y = d3.scaleLinear().domain([0, 10]).range([height, 0]);
+            x = d3.scaleBand().range([width, 0]).padding(0.3);
+
+            svg.append("g").call(d3.axisLeft(y));
+            xGroup = svg.append("g").call(d3.axisBottom(x)).attr("transform", "translate(0," + height + ")");
+        }
+
+        function updateGraph(data) {
+            x.domain(data.map(function(student) {
+                return student.studentName;
+            }))
+            // In this example, only our x-axis changes between data sets. Since it's a band scale, we have to
+            // map each entry in our data array to the object's name field. We keep the range and padding attributes
+            // of the scale static to preserve the overall size of the graph.
+
+            xGroup.transition().duration(500).call(d3.axisBottom(x));
+            // our xGroup variable is simply the "g" element containing our x-axis. We have to once again call
+            // d3.axisBottom() using our actual axis (the x variable) to update the grouping visually on the
+            // website. Using the transition() function, we can then specify the duration of our transition animation.
+            // Transition animations are optional, but they help make our graph more interactive.
+
+            let currentData = svg
+                .selectAll("rect")
+                .data(data);
+
+
+                currentData.enter().append("rect")
+                    .merge(currentData).transition().duration(500)
+                .attr("x", function(data) { return x(data.studentName); })
+                .attr("y", function(data) { return y(data.gradeAvg); })
+                .attr("width", x.bandwidth())
+                .attr("height", function(data) { return height - y(data.gradeAvg); })
+                .attr("fill", "#901db0");
+
+            currentData.exit().remove();
+            // Merge is similar
+            // to the built in Array.concat() function in JavaScript. D3 simply removes the elements "left" of the
+            // new ones, or rather the elements before the first "new" one appended to the merged selection.
+            // More details: https://observablehq.com/@dnarvaez27/understanding-enter-exit-merge-key-function
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            createGraph();
+            updateGraph(firstDataSet);
+        })
+
+    </script>
+
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 5rem">Bar Graph with Multiple Datasets</h1>
+
+    <div style="text-align: center; margin-bottom: 10rem">
+        Choose one of the buttons below to display a dataset
+            <div style="display:flex; margin-top: 1rem;">
+                <button type="button" onclick="updateGraph(firstDataSet)">
+                    First data set
+                </button>
+
+                <button type="button" onclick="updateGraph(secondDataSet)">
+                    Second data set
+                </button>
+            </div>
+    </div>
+
+    <svg style="display: block; margin:auto"></svg>
+</body>
+</html>

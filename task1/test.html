@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employees Salary Graph</title>
+
+    <meta name="author" content="Marko Minovski">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!--This is how we include a minimal version of the library d3, specifically the latest version v7.
+    It is also possible to install d3 locally via npm or another package manager-->
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            script();
+        }); // Call the function script() when the event "DOMContentLoaded" occurs (Immediately)
+
+        function script() {
+            const EMPLOYEES = [
+                {name: 'Marko', salary: 3000, age: 20},
+                {name: 'Stefan', salary: 10000, age: 35},
+                {name: 'Marija', salary: 8000, age: 27},
+                {name: 'Georgina', salary: 15000, age: 40}
+            ]; // Ова ни се дадените почетни податоци. За да создаваме графови, d3 очекува податоците да бидат во формат
+            // json, csv или tsv. Во нашиот случај, податоците веќе се во json формат, па можеме директно да преминеме
+            // на создавањето на графикот.
+
+
+
+            const width = 500;
+            const height = 300;
+
+            const margins = {
+                top: 30,
+                right: 0,
+                left: 40,
+                bottom: 30
+            }
+
+            // Секој svg елемент има свој width и height атрибут. За најдобар изглед е исто така добро да се чуваат
+            // посебни margins податоци
+
+            const svg = d3.select('svg')
+                .attr("width", width + margins.left + margins.right)
+                .attr("height", height + margins.top + margins.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+            // Користејќи го css селекторот d3.select(), можеме да селектираме одреден елемент на DOM. Во нашиот случај
+            // го селектиравме svg елементот.
+            // Слично како Java и други јазици можеме да повикаме функции 'врз' резултатот на други
+            // (method chaining) во истата линија на код. Со кодот погоре ги додаваме width и height атрибутите.
+            // 'transform' атрибутот ја позиционира целата групација 'g' на одредено место во контејнерот svg.
+            // Со margins.left и margins.top го позиционираме во центар, иако слободно може и други вредности да
+            // искористиме
+
+
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(EMPLOYEES, (d) => d.salary)])
+                .range([height, 0]);
+            // Секој axis има своја скала. Има повеќе скали во d3, од која што scaleLinear е наједноставна.
+            // Секоја скала има домен и ранг. Доменот одредува влезни податоци, додека рангот одредува самиот ранг
+            // на output на страната.
+            // scaleLinear() враќа линеарна скала, како на пример бројќи меѓу 1,000-10,000. Ова го прави преку т.н 'ticks'.
+            // d3 библиотеката самата одредува на колку 'растојание' ќе биде едниот tick до другиот.
+
+            const xScale = d3.scaleBand().range([0, width])
+                .domain(EMPLOYEES.map(function(d) { return d.name }))
+                .padding(0.2);
+            // scaleBand() is a non-ordinal scale that divides the 'range' into 'sections' called bands that
+            // each occupy a certain part of the range.
+
+            // Both of these scales are saved as variables so that we may reuse the method chains on concrete values.
+            // We will do this below!
+
+            svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(xScale));
+            svg.append("g").call(d3.axisLeft(yScale));
+            // Each scale is its own 'g' element, which we 'pin' to some part of the main 'g' element using the call()
+            // function in combination with d3.axisXXXX(), where XXXX is the axis we wish the scale to function as.
+            // Each axis is first generated starting at the top-left of the container. To bring the bottom axis 'down',
+            // we have to apply a transform attribute on it.
+
+            svg.selectAll("bar")
+                .data(EMPLOYEES)
+                .enter()
+                .append("rect")
+                .attr("x", function(e) { return xScale(e.name); })
+                .attr("y", function(e) { return yScale(e.salary); })
+                .attr("width", xScale.bandwidth())
+                .attr("height", function(e) { return height - yScale(e.salary); })
+                .attr("fill", "#aa43b0")
+                // We pre-emptively select all bars we will create using the d3.selectAll() CSS selector. This will
+            // return an empty selection first. Then, we bind our data to it and pass it through to the empty selection
+            // using the enter() function. Then, we append a rectangle to the end of the selection, and give it the
+            // attributes 'x', 'y', 'width', 'height' and 'color'.
+
+            // Each attribute is assigned using an anonymous function where we pass a certain field in the object
+            // as an argument to our previously defined scales. Each field is passed through all the methods defined
+            // in the xScale/yScale function before finally returning a result.
+            // Both scales output a numeric value that represents where on the screen the rectangle should be!
+            // For the width, d3 itself decides how wide each band should be based on the number of bands. We can
+            // access this result using the bandwidth() function.
+            // For the height, we subtract the value given from the yScale() function from the total height of the
+            // container
+        }
+
+
+
+    </script>
+
+</head>
+<body>
+
+    <h1 style="text-align: center; margin-bottom: 5rem">Employee Salary Chart</h1>
+
+    <div id="data" style="align-items: center">
+        <svg id="graph" style="margin: auto; display: block">
+
+        </svg>
+    </div>
+
+</body>
+</html>

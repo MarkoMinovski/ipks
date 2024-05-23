@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Quarterly Sales</title>
+
+    <meta name="author" content="Marko Minovski">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+
+        h1 {
+            margin-bottom: 5rem;
+            text-align: center;
+        }
+
+        #cards-wrapper-div {
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 5rem;
+        }
+
+        div {
+            text-align: center;
+        }
+
+        .card {
+            background: #808080;
+            display: flex;
+            flex-direction: column;
+            column-gap: 20px;
+            border: solid 5px black;
+            padding: 1rem;
+            width: 300px;
+        }
+
+        .card * {
+            text-align: center;
+        }
+
+
+
+    </style>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            processInfo();
+        })
+
+        function processInfo() {
+            d3.csv("restaurants.csv").then(function(data) {
+
+                let maxAverage = -1;
+                let maxAverageName = "";
+                let maxTotalName = "";
+                let maxTotal = -1;
+
+                data.forEach(function(obj) {
+
+                    const totalProfitsString = "Total profits this quarter: ";
+                    const averageAmountString = "Average amount spent per customer: ";
+
+                    console.log(obj)
+
+                    document.getElementById("quarterly-sales-" + obj.name).innerHTML =
+                        totalProfitsString + obj.total + '€'
+                    document.getElementById("average-per-customer-" + obj.name).innerHTML =
+                        averageAmountString + obj.average + '€'
+
+                    if (parseInt(obj.total) > maxTotal) {
+                        maxTotal = parseInt(obj.total);
+                        maxTotalName = obj.name;
+                    }
+
+                    if (parseFloat(obj.average) > maxAverage) {
+                        maxAverage = parseFloat(obj.average);
+                        maxAverageName = obj.name;
+                    }
+
+                })
+
+
+                d3.select("body").append("div").html("Most profitable restaurant: " + maxTotalName);
+                d3.select("body").append("div").html("Most revenue per customer: " + maxAverageName);
+
+
+            })
+        }
+
+
+    </script>
+
+</head>
+<body>
+
+    <h1>Restaurants</h1>
+
+
+    <div id="cards-wrapper-div">
+
+        <div class="card" id="finki">
+            <h4>FINKI Restaurant</h4>
+
+            <p>Address: Ruger Boskovik 16, Skopje</p>
+
+            <p id="quarterly-sales-finki">
+                Total profits this quarter: ???€
+            </p>
+
+            <p id="average-per-customer-finki">
+                Average amount spent per customer: ???€
+            </p>
+
+        </div>
+
+        <div class="card" id="ipks">
+            <h4>IPKS Burgers</h4>
+
+            <p>Address: Blvd Partizanski Odredi 872, Skopje</p>
+            <!-- Непостоечка адреса -->
+
+            <p id="quarterly-sales-ipks">
+                Total profits this quarter: ???€
+            </p>
+
+            <p id="average-per-customer-ipks">
+                Average amount spent per customer: ???€
+            </p>
+
+
+        </div>
+
+        <div class="card" id="ukim">
+            <h4>UKIM Pizza</h4>
+
+            <p>Address: Boulevard Goce Delchev 9, Skopje</p>
+
+            <p id="quarterly-sales-ukim">
+                Total profits this quarter: ???€
+            </p>
+
+            <p id="average-per-customer-ukim">
+                Average amount spent per customer: ???€
+            </p>
+
+        </div>
+
+    </div>
+
+
+</body>
+</html>
