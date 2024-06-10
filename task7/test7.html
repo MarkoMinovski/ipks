@@ -139,13 +139,6 @@
                 .attr("fill", "none")
                 .attr("stroke", "steelblue")
                 .attr("stroke-width", 2.5);
-
-
-            // Why data instead of datum like in the Alkaloid stocks example?
-            // Datum does not keep track of entry/exit sets. This was okay before because we only drew our graph once.
-            // Here, we need to redraw it, so we need access to the join() method, even though we are completely
-            // replacing the old path with a new one each time.
-            // More info: https://stackoverflow.com/questions/13181194/d3js-when-to-use-datum-and-data
         }
 
 

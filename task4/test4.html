@@ -66,15 +66,10 @@
             x.domain(data.map(function(student) {
                 return student.studentName;
             }))
-            // In this example, only our x-axis changes between data sets. Since it's a band scale, we have to
-            // map each entry in our data array to the object's name field. We keep the range and padding attributes
-            // of the scale static to preserve the overall size of the graph.
+
 
             xGroup.transition().duration(500).call(d3.axisBottom(x));
-            // our xGroup variable is simply the "g" element containing our x-axis. We have to once again call
-            // d3.axisBottom() using our actual axis (the x variable) to update the grouping visually on the
-            // website. Using the transition() function, we can then specify the duration of our transition animation.
-            // Transition animations are optional, but they help make our graph more interactive.
+
 
             let currentData = svg
                 .selectAll("rect")
@@ -90,10 +85,6 @@
                 .attr("fill", "#901db0");
 
             currentData.exit().remove();
-            // Merge is similar
-            // to the built in Array.concat() function in JavaScript. D3 simply removes the elements "left" of the
-            // new ones, or rather the elements before the first "new" one appended to the merged selection.
-            // More details: https://observablehq.com/@dnarvaez27/understanding-enter-exit-merge-key-function
         }
 
         document.addEventListener("DOMContentLoaded", function() {

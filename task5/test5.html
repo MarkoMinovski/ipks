@@ -35,39 +35,30 @@
             const width = 500;
             const height = 300;
             const radius = Math.min(width, height) / 2;
-            // За да изгледа најдобро нашиот Pie chart, го одредуваме радиусот како минималната вредност меѓу
-            // width и height поделено со 2
+
 
             svg.attr("width", width)
                 .attr("height", height);
 
             const grouping = svg.append("g")
                 .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
-            // Овие вредности (width/2) и (height/2) се одбрани за да биде точно во центарот на svg елементот нашиот
-            // pie chart
+
 
             const colors = d3.scaleOrdinal(d3.schemeSet1);
-            // За јасност во pie chart се потребни различни бои за секој лак.
-            // Ја повикуваме scaleOrdinal функцијата користејќи го глобалниот атрибут на d3 библиотеката schemeSet.
-            // schemeSet е само низа од бои претставени како хексадецимални вредности (стрингови).
-            // scaleOrdinal враќа индекс на некој елемент во низата според вредноста што ја праќаме
+
 
             const pieGenerator = d3.pie().value(function(d) {
                 return d.percentage;
             });
-            // За pie chart ја повикуваме функцијата d3.pie() којашто генерира низа од објекти (погледнете во console)
-            // Дополнително дефинираме со точно која вредност сакаме да работиме (препорачано нумерички вредности)
 
             const pieChartSlices = pieGenerator(DATA);
-            // Со ова всушност создаваме instance од генераторот со нашите податоци
+
 
 
             console.log(pieChartSlices);
 
             const arcAngleGenerator = d3.arc().innerRadius(0).outerRadius(radius);
-            // За секој 'slice' е потребен лакот. Со d3.arc() функцијата ги создаваме потребните arcs, како и нивните
-            // димензии (Сите лакови треба да имаат ист надворешен и внатрешен радиус). Ако внатрешниот радиус > 0,
-            // тогаш можеме да создадеме т.н 'Donut Chart'
+
 
             grouping.selectAll('path')
                 .data(pieChartSlices)
@@ -77,7 +68,6 @@
                 .attr('fill', d => colors(d.data.name))
                 .attr("stroke", "black")
                 .style("stroke-width", "2px")
-                //други styles можни...
 
             grouping.selectAll('text')
                 .data(pieChartSlices)
@@ -87,9 +77,7 @@
                 .attr("transform", d => "translate(" + arcAngleGenerator.centroid(d) + ")")
                 .style("text-anchor", "middle")
                 .style("font-size", "17px");
-            // Погоре додаваме text елементи за да објасниме кој лак на што се однесува. Користејќи ја centroid()
-            // функцијата 'врз' d3.arc() функцијата го добиваме центарот на path елементот (релативно).
-            // centroid() се обидува да го најде центарот врз самата нацртена патека на веб страната
+
         }
 
     </script>

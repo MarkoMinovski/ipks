@@ -32,38 +32,20 @@
 
 
             d3.csv("alkaloidStocksData.csv").then(function(data) {
-                // d3 supports reading external files, in this case our csv file, using the d3.csv() function.
-                // The function expects a string representing the path to the file it needs to access.
-                // d3.csv(), and the other file-reading methods, are asynchronous. They return a Promise object, that
-                // 'promises' the method will execute successfully. If so, we need to define what to do on a fulfilled
-                // Promise or on a rejected one (In our case our Promise object will never be 'rejected')
-                // With our .then() function, we create a new anonymous function that operates on the data returned.
 
-
-                // d3, as before, likes to work with JS objects. In this case it converts each row in the csv file
-                // to a JS object and returns an array of them. d3 decides which fields each object shall have by the
-                // first row in the csv file.
 
                 const parseDate = d3.utcParse("%Y-%m-%d");
-                // Since we're now working with temporal values, we need to parse them into actual UTC (or other formats)
-                // using some formatted string, in this case "%Y-%m-%d". By default, all values in the csv
-                // file are interpreted as simple strings.
 
                 data.forEach(function(d) {
                     d.timestamp = parseDate(d.timestamp);
                     d.price = +d.price;
                 });
 
-                // Call the parseDate() function on the timestamp field of each object in the array.
-                // Additionally, convert each price field from a String into a Number value.
 
                 const xScale = d3.scaleUtc()
                     .domain(d3.extent(data, d => d.timestamp))
                     .range([0, width]);
-                // the scaleUtc() function returns a temporal scale where the domain is time.
-                // d3.extent() expects two parameters. One, the array of values it is meant to work with. Two, the
-                // actual field it needs to operate on.
-                // Extent returns the minimum and maximum values in this array.
+
 
                 const yScale = d3.scaleLinear()
                     .domain([0, 20000])
@@ -72,8 +54,7 @@
                 const line = d3.line()
                     .x(d => xScale(d.timestamp))
                     .y(d => yScale(d.price));
-                // In a line chart, we only have one element. We directly assign what x and y values the path can work
-                // with
+
 
                 svg.append("g")
                     .attr("transform", "translate(0," + height + ")")
@@ -88,10 +69,6 @@
                     .attr("stroke", "blue")
                     .attr("stroke-width", 1.5)
                     .attr("d", line);
-
-                // datum() is used instead of data() when a single element is needed to be drawn from an array.
-                // the 'd' attribute returns the actual calculated path from the data supplied through 'datum'.
-                // The other attributes are visual-only
             });
         }
 
